@@ -41,3 +41,4 @@ arcade.draw_text("Arbor Day - Plant a Tree",
                  arcade.color.BLACK)
 arcade.finish_render()
 arcade.run()
+arcade.draw_lrbt_rectangle_filled(200, 50, 20, 100, arcade.csscolor.WHITE)
