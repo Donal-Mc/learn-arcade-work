@@ -4,7 +4,7 @@ This is a sample program to show how to draw using Python and the Arcade library
 import arcade
 #opens window
 arcade.open_window(600, 600, "drawing example")
-arcade.set_background_color((197, 241, 250))
+arcade.set_background_color((81, 123, 201))
 arcade.start_render()
 
 #will draw the base of the Belfast City Hall
@@ -40,7 +40,6 @@ arcade.draw_rectangle_filled(300, 90, 100, 100,
 arcade.draw_circle_filled(280, 78, 7, arcade.csscolor.BLACK)
 arcade.draw_circle_filled(320, 78, 7, arcade.csscolor.BLACK)
 arcade.draw_line(300, 140, 300, 40, arcade.color.BLACK )
-arcade.draw_triangle_outline(100, 150) (120, 170) (140, 150)
 
 
 

@@ -1,14 +1,11 @@
-"""
-This is a sample program to show how to draw using Python and the Arcade library.
-"""
-import arcade
-#opens window
-arcade.open_window(800, 800, "drawing example")
-arcade.set_background_color((197, 241, 250))
-arcade.start_render()
-arcade.finish_render()
-#ensures window stays open until close
-arcade.run()
+for i in range(10):
+    print(i)
 
+i = 0
+while i < 10:
+    print(i)
+    i += 1
 
-
+i = 10
+while i > -1:
+    i -= 1
