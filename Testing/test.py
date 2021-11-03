@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import random
 import arcade
 
@@ -88,7 +88,7 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = 70
         self.player_list.append(self.player_sprite)
 
-        enemy = EnemySprite(":resources:images/space_shooter/playerShip1_green.png",
+        enemy = EnemySprite(":,
                             scale=0.5,
                             bullet_list=self.bullet_list,
                             time_between_firing=2.0)
@@ -98,7 +98,7 @@ class MyGame(arcade.Window):
         self.enemy_list.append(enemy)
 
         # Add top-right enemy ship
-        enemy = EnemySprite(":resources:images/space_shooter/playerShip1_green.png",
+        enemy = EnemySprite("",
                             scale=0.5,
                             bullet_list=self.bullet_list,
                             time_between_firing=1.0)
@@ -196,11 +196,3 @@ def main():
     window = MyGame()
     window.setup()
     arcade.run()
-
-
-if __name__ == "__main__":
-    main()
-=======
-my_list = [3, 4, 2, 54, 11, 9]
-my_list[0]=100
-print(my_list)

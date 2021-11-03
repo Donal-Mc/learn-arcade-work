@@ -1,5 +1,3 @@
-""" Sprite Sample Program """
-
 import arcade
 
 # --- Constants ---
@@ -30,8 +28,7 @@ class MyGame(arcade.Window):
         # This variable holds our simple "physics engine"
         self.physics_engine = None
 
-        # Create the cameras. One for the GUI, one for the sprites.
-        # We scroll the 'sprite world' but not the GUI.
+        # Camera creation
         self.camera_for_sprites = arcade.Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.camera_for_gui = arcade.Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
 
@@ -94,36 +91,15 @@ class MyGame(arcade.Window):
     def on_draw(self):
         arcade.start_render()
 
-        # Select the scrolled camera for our sprites
         self.camera_for_sprites.use()
-
-        # Draw the sprites
         self.wall_list.draw()
         self.player_list.draw()
 
-        # Select the (unscrolled) camera for our GUI
         self.camera_for_gui.use()
         arcade.draw_text(f"Score: {self.score}", 10, 10, arcade.color.WHITE, 24)
 
-    def on_update(self, delta_time):
-        """ Movement and game logic """
-
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
+    def update(self, delta_time):
         self.physics_engine.update()
-
-        # Scroll the screen to the player
-        self.scroll_to_player()
-
-        # Scroll the window to the player.
-        #
-        # If CAMERA_SPEED is 1, the camera will immediately move to the desired position.
-        # Anything between 0 and 1 will have the camera move to the location with a smoother
-        # pan.
-        CAMERA_SPEED = 1
-        lower_left_corner = (self.player_sprite.center_x - self.width / 2,
-                             self.player_sprite.center_y - self.height / 2)
-        self.camera_for_sprites.move_to(lower_left_corner, CAMERA_SPEED)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
