@@ -30,6 +30,8 @@ class NeonBall:
         self.position_y += self.change_y
         self.position_x += self.change_x
 
+
+
         # See if the ball hit the edge of the screen. If so, change direction
         if self.position_x < self.radius:
             self.position_x = self.radius
@@ -42,6 +44,42 @@ class NeonBall:
 
         if self.position_y > SCREEN_HEIGHT - self.radius:
             self.position_y = SCREEN_HEIGHT - self.radius
+
+class Square:
+    def __init__(self, position_x, position_y, change_x, change_y, width, height, color):
+
+        self.position_x = position_x
+        self.position_y = position_y
+        self.change_x = change_x
+        self.change_y = change_y
+        self.width = width
+        self.height = height
+        self.color = color
+
+    def draw(self):
+        arcade.draw_rectangle_filled(self.position_x,
+                                     self.position_y,
+                                     self.width,
+                                     self.height,
+                                     self.color)
+
+    def update(self):
+        self.position_y += self.change_y
+        self.position_x += self.change_x
+
+        # See if the square hit the edge of the screen. If so, change direction
+        if self.position_x < self.height * self.width:
+            self.position_x = self.height * self.width
+
+        if self.position_x > SCREEN_WIDTH - self.height * self.width:
+            self.position_x = SCREEN_WIDTH - self.height * self.width
+
+        if self.position_y < self.height * self.width:
+            self.position_y = self.height * self.width
+
+        if self.position_y > SCREEN_HEIGHT - self.height * self.width:
+            self.position_y = SCREEN_HEIGHT - self.height * self.width
+
 
 
 class MyGame(arcade.Window):
@@ -59,6 +97,9 @@ class MyGame(arcade.Window):
 
         # Create our ball
         self.ball = NeonBall(50, 50, 0, 0, 15, arcade.color.NEON_GREEN)
+
+        # create our square
+        self.square = Square(175, 100, 20, 20, 20, 20, arcade.color.NEON_FUCHSIA)
 
         # Get a list of all the game controllers that are plugged in
         joysticks = arcade.get_joysticks()
@@ -87,6 +128,7 @@ class MyGame(arcade.Window):
         arcade.draw_arc_filled(500, 100, 110, 110, arcade.csscolor.AQUAMARINE, 180, 360)
 
         self.ball.draw()
+        self.square.draw()
 
     def update(self, delta_time):
 
@@ -105,7 +147,26 @@ class MyGame(arcade.Window):
             else:
                 self.ball.change_y = -self.joystick.y * MOVEMENT_SPEED
 
+        def on_key_press(self, key, modifiers):
+            """ Called whenever the user presses a key. """
+            if key == arcade.key.LEFT:
+                self.square.change_x = -MOVEMENT_SPEED
+            elif key == arcade.key.RIGHT:
+                self.square.change_x = MOVEMENT_SPEED
+            elif key == arcade.key.UP:
+                self.square.change_y = MOVEMENT_SPEED
+            elif key == arcade.key.DOWN:
+                self.square.change_y = -MOVEMENT_SPEED
+
+        def on_key_release(self, key, modifiers):
+            """ Called whenever a user releases a key. """
+            if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+                self.square.change_x = 0
+            elif key == arcade.key.UP or key == arcade.key.DOWN:
+                self.square.change_y = 0
+
         self.ball.update()
+        self.square.update()
 
 
 def main():
