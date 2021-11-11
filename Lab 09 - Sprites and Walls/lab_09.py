@@ -30,7 +30,7 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game and initialize the variables. """
-        # All sprites courtesy of Kenny
+        # All sprites courtesy of Kenny.nl
         # Sprite lists
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
