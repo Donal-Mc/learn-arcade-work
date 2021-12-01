@@ -58,7 +58,7 @@ class MyGame(arcade.Window):
             for column in range(COLUMN_COUNT):
                 # Figure out what color to draw the box
                 if self.grid[row][column] == 1:
-                    color = arcade.color.GREEN
+                    color = arcade.color.AQUAMARINE
                 else:
                     color = arcade.color.WHITE
 
