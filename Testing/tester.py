@@ -1,109 +1,84 @@
-""" Sprite Sample Program """
-
 import random
-import arcade
+def selection_sort(my_list):
+    """ Sort a list using the selection sort """
 
-# --- Constants ---
-SPRITE_SCALING_PLAYER = 0.5
-SPRITE_SCALING_COIN = 0.2
-COIN_COUNT = 50
+    # Loop through the entire array
+    for cur_pos in range(len(my_list)):
+        # Find the position that has the smallest number
+        # Start with the current position
+        min_pos = cur_pos
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+        # Scan left to right (end of the list)
+        for scan_pos in range(cur_pos + 1, len(my_list)):
+
+            # Is this position smallest?
+            if my_list[scan_pos] < my_list[min_pos]:
+                # It is, mark this position as the smallest
+                min_pos = scan_pos
+
+        # Swap the two values
+        temp = my_list[min_pos]
+        my_list[min_pos] = my_list[cur_pos]
+        my_list[cur_pos] = temp
 
 
-class MyGame(arcade.Window):
-    """ Our custom Window Class"""
+def insertion_sort(my_list):
+    """ Sort a list using the insertion sort """
 
-    def __init__(self):
-        """ Initializer """
-        # Call the parent class initializer
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Sprite Example")
+    # Start at the second element (pos 1).
+    # Use this element to insert into the
+    # list.
+    for key_pos in range(1, len(my_list)):
 
-        # Variables that will hold sprite lists
-        self.player_list = None
-        self.coin_list = None
+        # Get the value of the element to insert
+        key_value = my_list[key_pos]
 
-        # Set up the player info
-        self.player_sprite = None
-        self.score = 0
+        # Scan from right to the left (start of list)
+        scan_pos = key_pos - 1
 
-        # Don't show the mouse cursor
-        self.set_mouse_visible(False)
+        # Loop each element, moving them up until
+        # we reach the position the
+        while (scan_pos >= 0) and (my_list[scan_pos] > key_value):
+            my_list[scan_pos + 1] = my_list[scan_pos]
+            scan_pos = scan_pos - 1
 
-        arcade.set_background_color(arcade.color.AMAZON)
+        # Everything's been moved out of the way, insert
+        # the key into the correct location
+        my_list[scan_pos + 1] = key_value
 
-    def setup(self):
-        """ Set up the game and initialize the variables. """
 
-        # Sprite lists
-        self.player_list = arcade.SpriteList()
-        self.coin_list = arcade.SpriteList()
-
-        # Score
-        self.score = 0
-
-        # Set up the player
-        # Character image from kenney.nl
-        self.player_sprite = arcade.Sprite("character.png", SPRITE_SCALING_PLAYER)
-        self.player_sprite.center_x = 50
-        self.player_sprite.center_y = 50
-        self.player_list.append(self.player_sprite)
-
-        # Create the coins
-        for i in range(COIN_COUNT):
-
-            # Create the coin instance
-            # Coin image from kenney.nl
-            coin = arcade.Sprite("coin_01.png", SPRITE_SCALING_COIN)
-
-            # Position the coin
-            coin.center_x = random.randrange(SCREEN_WIDTH)
-            coin.center_y = random.randrange(SCREEN_HEIGHT)
-
-            # Add the coin to the lists
-            self.coin_list.append(coin)
-
-    def on_draw(self):
-        """ Draw everything """
-        arcade.start_render()
-        self.coin_list.draw()
-        self.player_list.draw()
-
-        # Put the text on the screen.
-        output = f"Score: {self.score}"
-        arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        """ Handle Mouse Motion """
-
-        # Move the center of the player sprite to match the mouse x, y
-        self.player_sprite.center_x = x
-        self.player_sprite.center_y = y
-
-    def update(self, delta_time):
-        """ Movement and game logic """
-
-        # Call update on all sprites (The sprites don't do much in this
-        # example though.)
-        self.coin_list.update()
-
-        # Generate a list of all sprites that collided with the player.
-        coins_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
-                                                              self.coin_list)
-
-        # Loop through each colliding sprite, remove it, and add to the score.
-        for coin in coins_hit_list:
-            coin.remove_from_sprite_lists()
-            self.score += 1
+# This will point out a list
+# For more information on the print formatting {:3}
+# see the chapter on print formatting.
+def print_list(my_list):
+    for item in my_list:
+        print(f"{item:3}", end="")
+    print()
 
 
 def main():
-    """ Main method """
-    window = MyGame()
-    window.setup()
-    arcade.run()
+    # Create two lists of the same random numbers
+    list_for_selection_sort = []
+    list_for_insertion_sort = []
+    list_size = 100
+    for i in range(list_size):
+        new_number = random.randrange(100)
+        list_for_selection_sort.append(new_number)
+        list_for_insertion_sort.append(new_number)
+
+    # Print the original list
+    print("Original List")
+    print_list(list_for_selection_sort)
+
+    # Use the selection sort and print the result
+    print("Selection Sort")
+    selection_sort(list_for_selection_sort)
+    print_list(list_for_selection_sort)
+
+    # Use the insertion sort and print the result
+    print("Insertion Sort")
+    insertion_sort(list_for_insertion_sort)
+    print_list(list_for_insertion_sort)
 
 
-if __name__ == "__main__":
-    main()
+main()
