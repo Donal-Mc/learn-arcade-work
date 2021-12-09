@@ -1,44 +1,192 @@
-"""
-Testing how to draw stuff
-"""
+import random
 import arcade
 
-# open a window
-arcade.open_window(600, 600, "Drawing Example")
-#sets colour of background
-arcade.set_background_color(arcade.csscolor.SKY_BLUE)
-#starts drawing
-arcade.start_render()
-#draws rectangele
-arcade.draw_lrtb_rectangle_filled(0, 600, 300, 0, arcade.csscolor.GREEN)
-arcade.draw_rectangle_filled(100, 320, 20, 60, arcade.csscolor.SIENNA)
-arcade.draw_circle_filled(100, 350, 30, arcade.csscolor.DARK_GREEN)
-arcade.draw_rectangle_filled(200, 320, 20, 60, arcade.csscolor.SIENNA)
-arcade.draw_ellipse_filled(200, 370, 60, 80, arcade.csscolor.DARK_GREEN)
-arcade.draw_rectangle_filled(300, 320, 20, 60, arcade.csscolor.SIENNA)
-arcade.draw_arc_filled(300, 340, 60, 100, arcade.csscolor.DARK_GREEN, 0, 180)
-arcade.draw_rectangle_filled(400, 320, 20, 60, arcade.csscolor.SIENNA)
-arcade.draw_triangle_filled(400, 400, 370, 320, 430, 320, arcade.csscolor.DARK_GREEN)
-arcade.draw_rectangle_filled(500, 320, 20, 60, arcade.csscolor.SIENNA)
-arcade.draw_polygon_filled(((500, 400),
-                            (480, 360),
-                            (470, 320),
-                            (530, 320),
-                            (520, 360)
-                            ),
-                           arcade.csscolor.DARK_GREEN)
-arcade.draw_circle_filled(500, 550, 40, arcade.color.YELLOW)
-arcade.draw_line(500, 550, 400, 550, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 600, 550, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 500, 450, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 500, 650, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 550, 600, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 550, 500, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 450, 600, arcade.color.YELLOW, 3)
-arcade.draw_line(500, 550, 450, 500, arcade.color.YELLOW, 3)
-arcade.draw_text("Arbor Day - Plant a Tree",
-                 150, 230,
-                 arcade.color.BLACK)
-arcade.finish_render()
-arcade.run()
-arcade.draw_lrbt_rectangle_filled(200, 50, 20, 100, arcade.csscolor.WHITE)
+SPRITE_SCALING = 0.5
+TILE_SCALING = 0.5
+GRID_PIXEL_SIZE = 128
+GRAVITY = 0.25
+
+DEFAULT_SCREEN_WIDTH = 800
+DEFAULT_SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Sprite Move with Scrolling Screen Example"
+
+# How many pixels to keep as a minimum margin between the character
+# and the edge of the screen.
+VIEWPORT_MARGIN = 220
+
+# How fast the camera pans to the player. 1.0 is instant.
+CAMERA_SPEED = 0.1
+
+# How fast the character moves
+PLAYER_MOVEMENT_SPEED = 7
+JUMP_SPEED = 10
+
+
+class MyGame(arcade.Window):
+    """ Main application class. """
+
+    def __init__(self, width, height, title):
+        """
+        Initializer
+        """
+        super().__init__(width, height, title, resizable=True)
+
+        # Sprite lists
+        self.player_list = None
+        self.wall_list = None
+
+        # Set up the player
+        self.player_sprite = None
+
+        # Physics engine so we don't run into walls.
+        self.physics_engine = None
+
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
+        # Create the cameras. One for the GUI, one for the sprites.
+        # We scroll the 'sprite world' but not the GUI.
+        self.camera_sprites = arcade.Camera(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
+        self.camera_gui = arcade.Camera(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT)
+
+    def setup(self):
+        """ Set up the game and initialize the variables. """
+
+        # Sprite lists
+        self.player_list = arcade.SpriteList()
+        self.wall_list = arcade.SpriteList()
+
+        # Set up the player
+        self.player_sprite = arcade.Sprite("character.png",
+                                           scale=0.4)
+        self.player_sprite.center_x = 256
+        self.player_sprite.center_y = 512
+        self.player_list.append(self.player_sprite)
+
+        # --- Load our map
+
+        # Read in the tiled map
+        map_name = "test_maps.json"
+        self.tile_map = arcade.load_tilemap(map_name, scaling=TILE_SCALING)
+
+        # Set wall and coin SpriteLists
+        # Any other layers here. Array index must be a layer.
+        self.wall_list = self.tile_map.sprite_lists["Walls"]
+        # self.coin_list = self.tile_map.sprite_lists["Coins"]
+
+        # --- Other stuff
+        # Set the background color
+        if self.tile_map.background_color:
+            arcade.set_background_color(self.tile_map.background_color)
+        else:
+            arcade.set_background_color(arcade.color.AMAZON)
+
+        # Keep player from running through the wall_list layer
+        self.physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player_sprite,
+            self.wall_list,
+            gravity_constant=GRAVITY
+        )
+
+    def on_draw(self):
+        """
+        Render the screen.
+        """
+
+        # This command has to happen before we start drawing
+        arcade.start_render()
+
+        # Select the camera we'll use to draw all our sprites
+        self.camera_sprites.use()
+
+        # Draw all the sprites.
+        self.wall_list.draw()
+        self.player_list.draw()
+
+        # Select the (unscrolled) camera for our GUI
+        self.camera_gui.use()
+
+        # Draw the GUI
+        arcade.draw_rectangle_filled(self.width // 2,
+                                     20,
+                                     self.width,
+                                     40,
+                                     arcade.color.ALMOND)
+        text = f"Scroll value: ({self.camera_sprites.position[0]:5.1f}, " \
+               f"{self.camera_sprites.position[1]:5.1f})"
+        arcade.draw_text(text, 10, 10, arcade.color.BLACK_BEAN, 20)
+
+    def on_key_press(self, key, modifiers):
+        """
+        Called whenever a key is pressed.
+        """
+        if key == arcade.key.UP:
+            if self.physics_engine.can_jump():
+                self.player_sprite.change_y = JUMP_SPEED
+        elif key == arcade.key.LEFT:
+            self.left_pressed = True
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = True
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+
+        if key == arcade.key.UP:
+            self.up_pressed = False
+        elif key == arcade.key.DOWN:
+            self.down_pressed = False
+        elif key == arcade.key.LEFT:
+            self.left_pressed = False
+        elif key == arcade.key.RIGHT:
+            self.right_pressed = False
+
+    def on_update(self, delta_time):
+        """ Movement and game logic """
+
+        # Calculate speed based on the keys pressed
+        self.player_sprite.change_x = 0
+        # self.player_sprite.change_y = 0
+
+        if self.left_pressed and not self.right_pressed:
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        elif self.right_pressed and not self.left_pressed:
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+
+        # Call update on all sprites (The sprites don't do much in this
+        # example though.)
+        self.physics_engine.update()
+
+        # Scroll the screen to the player
+        self.scroll_to_player()
+
+    def scroll_to_player(self):
+        """
+        Scroll the window to the player.
+
+        if CAMERA_SPEED is 1, the camera will immediately move to the desired position.
+        Anything between 0 and 1 will have the camera move to the location with a smoother
+        pan.
+        """
+
+        position = self.player_sprite.center_x - self.width / 2, \
+            self.player_sprite.center_y - self.height / 2
+        self.camera_sprites.move_to(position, CAMERA_SPEED)
+
+    def on_resize(self, width, height):
+        """
+        Resize window
+        Handle the user grabbing the edge and resizing the window.
+        """
+        self.camera_sprites.resize(int(width), int(height))
+        self.camera_gui.resize(int(width), int(height))
+
+
+def main():
+    """ Main function """
+    window = MyGame(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, SCREEN_TITLE)
+    window.setup()
+    arcade.run()
+main()
