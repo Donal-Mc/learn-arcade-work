@@ -206,6 +206,9 @@ class MyGame(arcade.Window):
             wall.center_y = coordinate[1]
             self.wall_list.append(wall)
 
+        # For collectables
+
+
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite,
                                                          self.wall_list)
 
