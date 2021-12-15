@@ -1,5 +1,4 @@
 Donal Mackin
-<<<<<<< HEAD
 12/4/2
 Quantitative reasoning assignment
 
@@ -89,6 +88,3 @@ always have that fundamental failing. As such computers can never fully replace
 us as they are simply unable to function in a real world where everything cannot
 be broken down into a binary system of 1s and 0s.
 =======
-12/2/2021
-Quantitative Reasoning Reflection
->>>>>>> fd718f938cfd493e907dfeccabcf61f80f90423d
